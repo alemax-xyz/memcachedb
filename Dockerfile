@@ -12,8 +12,7 @@ RUN mkdir -p /build/image
 WORKDIR /build
 RUN apt-get download \
     memcachedb \
-    libevent-2.0-5 \
-    libdb5.3
+    libevent-2.0-5
 RUN for file in *.deb; do dpkg-deb -x ${file} image/; done
 
 WORKDIR /build/image
