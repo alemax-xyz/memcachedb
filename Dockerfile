@@ -1,15 +1,9 @@
-#
-# This is a multi-stage build.
-# Actual build is at the very end.
-#
+FROM library/ubuntu:bionic AS build
 
-FROM library/ubuntu:xenial AS build
-
-ENV DEBIAN_FRONTEND noninteractive
 ENV LANG C.UTF-8
-RUN apt-get update && \
-    apt-get install -y \
-        python-software-properties \
+RUN export DEBIAN_FRONTEND=noninteractive \
+ && apt-get update \
+ && apt-get install -y \
         software-properties-common \
         apt-utils
 
@@ -17,7 +11,7 @@ RUN mkdir -p /build/image
 WORKDIR /build
 RUN apt-get download \
     memcachedb \
-    libevent-2.0-5
+    libevent-2.1-6
 RUN for file in *.deb; do dpkg-deb -x ${file} image/; done
 
 WORKDIR /build/image
