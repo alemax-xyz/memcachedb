@@ -1,3 +1,18 @@
+FROM clover/base AS base
+
+RUN groupadd \
+        --gid 50 \
+        --system \
+        memcachedb \
+ && useradd \
+        --home-dir /var/lib/memcachedb \
+        --no-create-home \
+        --system \
+        --shell /bin/false \
+        --uid 50 \
+        --gid 50 \
+        memcachedb
+
 FROM library/ubuntu:bionic AS build
 
 ENV LANG C.UTF-8
@@ -19,13 +34,15 @@ RUN rm -rf \
         etc \
         usr/share
 
+COPY --from=base /etc/group /etc/gshadow /etc/passwd /etc/shadow etc/
+COPY init/ etc/init/
+
+
 FROM clover/base
 
 WORKDIR /
 COPY --from=build /build/image /
 
-VOLUME ["/var/lib/memcachedb"]
+VOLUME [${MEMCACHEDB_DB_HOME:-/var/lib/memcached}]
 
-CMD ["memcachedb", "-u", "root", "-H", "/var/lib/memcachedb", "-f", "default.db", "-v", "-r"]
-
-EXPOSE 21201
+EXPOSE ${MEMCACHED_TCP_PORT:-21201}/tcp ${MEMCACHED_UDP_PORT:-21201}/udp
