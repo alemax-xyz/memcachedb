@@ -1,6 +1,6 @@
 #!/bin/sh
 
-memcachedb \
+exec memcachedb \
 	-p ${MEMCACHEDB_TCP_PORT:-21201} \
 	-U ${MEMCACHEDB_UDP_PORT:-21201} \
 	-u ${PUSER} \
